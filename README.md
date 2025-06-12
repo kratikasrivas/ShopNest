@@ -24,26 +24,28 @@ This is a full-stack E-commerce web application built using **React**, **Redux T
 
 ---
 ## 📁 Folder Structure
-ecommerce-website/
-├── client/ # React + Tailwind frontend
-│ ├── public/
-│ └── src/
-│ ├── app/ # Redux store config
-│ ├── components/ # Reusable UI components
-│ ├── pages/ # Page-level components
-│ ├── features/ # Redux slices
-│ └── main.jsx # Entry point
-│
-├── server/ # Node.js + Express backend
-│ ├── config/ # DB connection & environment
-│ ├── controllers/ # Route handlers
-│ ├── models/ # Mongoose schemas
-│ ├── routes/ # Express routes
-│ └── server.js # Main server file
-│
-├── .gitignore
-├── README.md
-└── LICENSE
+
+`ecommerce-website/`  
+├── `client/` – React + Tailwind frontend  
+│   ├── `public/`  
+│   └── `src/`  
+│      ├── `app/` – Redux store config  
+│      ├── `components/` – Reusable UI components  
+│      ├── `pages/` – Page-level components  
+│      ├── `features/` – Redux slices  
+│      └── `main.jsx` – Entry point  
+│  
+├── `server/` – Node.js + Express backend  
+│   ├── `config/` – DB connection & environment  
+│   ├── `controllers/` – Route handlers  
+│   ├── `models/` – Mongoose schemas  
+│   ├── `routes/` – Express routes  
+│   └── `server.js` – Main server file  
+│  
+├── `.gitignore`  
+├── `README.md`  
+└── `LICENSE`
+
 ---
 
 👥 Team Members
