@@ -2,6 +2,10 @@ const express=require('express');
 const mongoose=require('mongoose');
 const cookieParser=require('cookie-parser');
 const cors=require('cors');
+const authRouter= require('./routes/auth/auth-routes')
+const adminProductsRouter=require('./routes/admin/products-routes')
+
+
 
 mongoose.connect(
     "mongodb+srv://kratikasriwas:7736@cluster0.kfgxmo2.mongodb.net/"
@@ -28,4 +32,10 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+app.use("/api/auth",authRouter);
+app.use('/api/admin/products',adminProductsRouter);
+
+
+//api/auth/register->registerUser controller in this way we will use it
+
 app.listen(PORT,()=> console.log(`Server is now running on port ${PORT}`));
