@@ -5,9 +5,10 @@ import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
+import { useSelector } from 'react-redux';
 
 
-function ProductImageUpload({imageFile,setImageFile,imageLoadingState, uploadedImageUrl, setUploadedImageUrl,setImageLoadingState}) {
+function ProductImageUpload({imageFile,setImageFile,imageLoadingState, setUploadedImageUrl,setImageLoadingState, isEditMode}) {
 
     const inputRef=useRef(null);
 
@@ -42,19 +43,6 @@ function ProductImageUpload({imageFile,setImageFile,imageLoadingState, uploadedI
 
     console.log(imageFile);
 
-    // async function uploadImageToCloudinary(){
-    //     setImageLoadingState(true)
-    //     const data=new FormData();
-    //     data.append('my_file',imageFile)
-    //     const response=await axios.post('http://localhost:5000/api/admin/products/upload-image',data);
-    //     console.log(response,'response');
-        
-
-    //     if(response?.data?.success) {
-    //         setUploadedImageUrl(response.data.result.url);
-    //         setImageLoadingState(false);
-    //     }
-    // }
 
     async function uploadImageToCloudinary() {
     try {
@@ -88,23 +76,32 @@ function ProductImageUpload({imageFile,setImageFile,imageLoadingState, uploadedI
     return ( 
         <div className="w-full max-w-md mx-auto mt-4" >
             <Label className="text-lg font-semibold mb-2 block" >Upload Image</Label>
-            <div onDragOver={handleDragOver} onDrop={handleDrop} className="border-2 border-dashed rounded-lg p-4" >
+            <div
+  onDragOver={handleDragOver}
+  onDrop={handleDrop}
+  className={`
+    ${isEditMode ? "opacity-60" : "bg-white text-black hover:bg-gray-100"}
+    border-2 border-dashed rounded-lg p-4
+  `}
+>
                 <Input id="image-upload" 
                     type="file" 
                     className="hidden"  
                     ref={inputRef} 
-                    onChange={handleImageFileChange} />
+                    onChange={handleImageFileChange} 
+                    disabled={isEditMode}/>
                 {
                     !imageFile ? (
 
-                    <Label htmlFor="image-upload" className="flex flex-col items-center justify-center h-32 cursor-pointer" >
+                    <Label htmlFor="image-upload" 
+                    className={`${isEditMode ? 'cursor-not-allowed' : ''} flex flex-col items-center justify-center h-32 cursor-pointer`}>
                         <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
                         <span>Drag & drop or click to upload image</span>
 
                     </Label>
                     ) : (
                         imageLoadingState ?(
-                            <Skeleton className='h-10 bg-gray-100'/>
+                            <Skeleton className='h-10 bg-gray-200'/>
                         )
                          :
                         <div className="flex items-center justify-between" >
@@ -124,3 +121,5 @@ function ProductImageUpload({imageFile,setImageFile,imageLoadingState, uploadedI
 }
 
 export default ProductImageUpload;
+
+

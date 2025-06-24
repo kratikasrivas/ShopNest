@@ -1,4 +1,3 @@
-
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const User=require('../../models/User')
@@ -45,19 +44,22 @@ const loginUser=async(req, res)=> {
     try{
         const checkUser=await User.findOne({email});
         if(!checkUser) return res.json({
-            success: false,
+                success: false,
             message: "User doesn't exists! Please register first"
-        });
+            });
 
         const checkPasswordMatch= await bcrypt.compare(password,checkUser.password);
         if(!checkPasswordMatch) return res.json({
-            success: false,
+                success: false,
             message: "Incorrect password! Please try again",
-        });
+            });
 
-        const token=jwt.sign({
-            id:checkUser._id, role:checkUser.role, email: checkUser.email
-        },'CLIENT_SECRET_KEY',{expiresIn:'60m'})
+        const token = jwt.sign({
+            id: checkUser._id,
+            role: checkUser.role,
+            email: checkUser.email,
+            userName: checkUser.userName
+        },process.env.JWT_SECRET || 'your_super_strong_and_random_secret_key_12345!@#$',{expiresIn:'60m'})
 
         res.cookie('token',token,{httpOnly:true,secure:false}).json({
             success: true,
@@ -66,7 +68,9 @@ const loginUser=async(req, res)=> {
                 email : checkUser.email,
                 role: checkUser.role,
                 id: checkUser._id,
+                userName:checkUser.userName
             },
+            token
         });
     }catch(e){
         console.log(e);
@@ -89,14 +93,18 @@ const logoutUser=(req,res)=>{
 
 //auth middleware
 const authMiddleware=async(req,res,next)=>{
-    const token=req.cookies.token;
+    let token = req.headers.authorization;
+    if (token) {
+        token = token.split(' ')[1]; // Extract token from 'Bearer <token>'
+    }
+    
     if(!token) return res.status(401).json({
-        success: false,
+                success: false,
         message: 'Unauthorised user!'
     })
 
     try{
-        const decoded=jwt.verify(token,'CLIENT_SECRET_KEY');
+        const decoded=jwt.verify(token,process.env.JWT_SECRET || 'your_super_strong_and_random_secret_key_12345!@#$');
         req.user=decoded;
         next();
     }catch(error){

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState={
     isLoading : false,
@@ -63,14 +64,27 @@ const AdminProductsSlice=createSlice({
         builder.addCase(fetchAllProducts.pending,(state)=>{
             state.isLoading=true;
         }).addCase(fetchAllProducts.fulfilled,(state,action)=>{
-            console.log(action.payload);
+            
             state.isLoading=false;
-            state.productList=action.payload;
+            state.productList=action.payload.data;
         }).addCase(fetchAllProducts.rejected,(state,action)=>{
             
             state.isLoading=false;
             state.productList=[];
         })
+        .addCase(addNewProduct.fulfilled, (state, action) => {
+            state.productList.push(action.payload);
+        })
+        .addCase(editProduct.fulfilled, (state, action) => {
+            const updatedProduct = action.payload.data;
+            const index = state.productList.findIndex(p => p._id === updatedProduct._id);
+            if (index !== -1) {
+                state.productList[index] = updatedProduct;
+            }
+        })
+        .addCase(deleteProduct.fulfilled, (state, action) => {
+            state.productList = state.productList.filter(p => p._id !== action.meta.arg);
+        });
     },
 });
 

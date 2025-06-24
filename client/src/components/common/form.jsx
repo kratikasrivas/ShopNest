@@ -108,6 +108,12 @@ function CommonForm({
     return element;
   }
 
+  function isFormValid() {
+    return Object.keys(formData).every(
+      (key) => formData[key] !== undefined && formData[key] !== null && formData[key] !== ""
+    );
+  }
+
   return (
     <form onSubmit={onSubmit}>
       <div className="flex flex-col gap-3">
@@ -121,6 +127,7 @@ function CommonForm({
       <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
         {buttonText || "Submit"}
       </Button>
+      {console.log('Button disabled state:', isBtnDisabled)}
     </form>
   );
 }
