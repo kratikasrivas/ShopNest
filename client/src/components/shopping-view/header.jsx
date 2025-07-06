@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+
 import { HousePlug, Menu, ShoppingCart, User, UserCog, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -17,14 +19,29 @@ import { AvatarFallback, Avatar } from "../ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
+import { fetchCartItems } from "@/store/shop/cart-slice";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 function MenuItems() {
+  const navigate=useNavigate()
+  function handleNavigate(getCurrentMenuItem){
+    sessionStorage.removeItem('filters')
+    const currentFilter=getCurrentMenuItem.id !=='home' ? 
+    {
+      category : [getCurrentMenuItem.id]
+    }:null
+    sessionStorage.setItem('filters',JSON.stringify(currentFilter))
+    navigate(getCurrentMenuItem.path)
+  }
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
       {shoppingViewHeaderMenuItems.map(menuItem => (
-        <Link className="text-sm font-medium" key={menuItem.id} to={menuItem.path}>
-          {menuItem.label}
-        </Link>
+        <Label onClick ={()=>handleNavigate(menuItem)}
+           className="text-sm font-medium cursor-pointer" 
+            key={menuItem.id} 
+          >
+            {menuItem.label}
+        </Label>
       ))}
     </nav>
   );
@@ -32,6 +49,7 @@ function MenuItems() {
 
 function HeaderRightContent(){
   const { user} = useSelector((state) => state.auth);
+  const {cartItems}= useSelector((state)=>state.shopCart);
   const [openCartSheet, setOpenCartSheet]=useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,15 +57,24 @@ function HeaderRightContent(){
   function handleLogout() {
     dispatch(logoutUser());
   }
+   useEffect(()=>{
+     dispatch(fetchCartItems(user?.id))
+   },[dispatch])
+    console.log(cartItems,"kratika");
 
   return <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-        <Sheet open={openCartSheet} onOpenChange={()=>setOpenCartSheet(false)}>
+      <Sheet open={openCartSheet} onOpenChange={()=>setOpenCartSheet(false)}>
         <Button onClick={()=>setOpenCartSheet(true)} variant="outline" size="icon">
         <ShoppingCart className="w-6 h-6"/>
         <span className="sr-only">User Cart</span>
         </Button>
-        <UserCartWrapper/>
-        </Sheet>
+        <UserCartWrapper setOpenCartSheet={setOpenCartSheet}
+             cartItems={
+              cartItems && cartItems.items && cartItems.items.length>0 
+              ? cartItems.items 
+              :[]}
+         />
+      </Sheet>
 
         <DropdownMenu>
         <DropdownMenuTrigger asChild>

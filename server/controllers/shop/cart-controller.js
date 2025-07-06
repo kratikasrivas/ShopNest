@@ -1,6 +1,5 @@
-const Cart=require("../../models/cart");
+const Cart=require("../../models/Cart");
 const Product=require("../../models/Product");
-
 const addToCart=async(req,res)=>{
     try{
         const {userId,productId,quantity}=req.body;
@@ -121,8 +120,8 @@ const fetchCartItem=async(req,res)=>{
         }
 
         const cart=await Cart.findOne({userId}).populate({
-            path:"item.productId",
-            select:"name price image salePrice",
+            path:"items.productId",
+            select:"title price image salePrice",
         });
 
         if(!cart){

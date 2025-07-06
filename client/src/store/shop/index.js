@@ -1,9 +1,10 @@
 import axios from 'axios';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
-const intitialState = {
-    productList: [],
+const initialState = {
     isLoading: false,
+    productList: [],
+    productDetails:null,
 
 };
 
@@ -38,4 +39,4 @@ const shopProductSlice = createSlice({
 
 })
 
-export default shoppingProductSlice.reducer;
+export default shopProductSlice.reducer;

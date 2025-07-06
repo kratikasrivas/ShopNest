@@ -4,10 +4,37 @@ import {Button} from "../ui/button";
 import {Avatar, AvatarFallback} from "../ui/avatar";
 import {StarIcon} from "@heroicons/react/24/outline";
 import {Input} from "../ui/input";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { useToast } from "@/hooks/use-toast";
+import { setProductDetails } from "@/store/shop/products-slice";
 
 function ProductDetailsDialog({open,setOpen,productDetails}){
+    const dispatch=useDispatch()
+    const {user} =useSelector(state=>state.auth)
+    const {toast}=useToast()
+    function handleAddtoCart(getCurrentProductId){
+        dispatch(
+           addToCart({
+                userId: user?.id,
+                productId: getCurrentProductId, 
+                quantity: 1,
+            })
+        ).then( (data)=>{
+             if (data?.payload?.success){
+                dispatch(fetchCartItems(user?.id));
+                toast({
+                    title:"Product is added to cart",
+                })
+             }
+        });
+    }
+    function handleDialogClose(){
+        setOpen(false)
+        dispatch(setProductDetails())
+    }
     return(
-       <Dialog open={open} onOpenChange={setOpen} >
+       <Dialog open={open} onOpenChange={handleDialogClose} >
         <DialogContent className="grid grid-cols-2 gap-4 sm:max-w-[80vw] lg:max-w-[70vw] h-[80vh] overflow-y-auto">
             <div className="relative overflow-hidden rounded-lg">
             <img
@@ -44,7 +71,7 @@ function ProductDetailsDialog({open,setOpen,productDetails}){
                     <span className="text-muted-foreground">(4.5)</span>
                 </div>
                 <div className="mt-5 mb-5">
-                    <Button className="w-full">Add to Cart</Button>
+                    <Button className="w-full" onClick={()=>handleAddtoCart(productDetails?._id)}>Add to Cart</Button>
                 </div>
                 <Separator/>
                 <div className="max-h-[300px] overflow-auto">

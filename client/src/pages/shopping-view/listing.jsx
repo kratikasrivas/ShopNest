@@ -17,6 +17,9 @@ import { categoryOptionsMap, brandOptionsMap } from "@/config";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { fetchProductDetails } from "../../store/shop/products-slice";
 import ProductDetailsDialog from "../../components/shopping-view/product-details";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { useToast } from "@/hooks/use-toast";
+
 
 function createSearchParamsHelper(filtersParams) {
     const queryParam=[];
@@ -39,10 +42,13 @@ function ShoppingListing({product}){
     const dispatch=useDispatch();
     const [open, setOpen] = useState(false);
     const {productList, productDetails}=useSelector(state => state.shopProducts);
+    const {user}= useSelector(state=>state.auth);
     const [filters, setFilters] = useState({});
     const[sort,setSort]=useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const [openDetailsDialog, setOpenDetailsDialog]=useState(false);
+    const {toast} =useToast()
+
 
     function handleSort(value) {
         console.log(value);
@@ -75,6 +81,23 @@ function ShoppingListing({product}){
 function handleGetProductDetails(getCurrentProductId){
     console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
+
+}
+function handleAddtoCart(getCurrentProductId){
+    dispatch(
+        addToCart({
+            userId: user?.id,
+            productId: getCurrentProductId, 
+            quantity: 1,
+        })
+    ).then( (data)=>{
+         if (data?.payload?.success){
+            dispatch(fetchCartItems(user?.id));
+            toast({
+                title:"Product is added to cart",
+            })
+         }
+    });
 }
     useEffect(() => {
         setSort('price-lowtohigh');
@@ -95,9 +118,7 @@ function handleGetProductDetails(getCurrentProductId){
 
     useEffect(() => {
         if(productDetails!=null) setOpenDetailsDialog(true);
-    },[productDetails])
-
-    console.log(productDetails, "productDetails");
+    },[productDetails]);
 
 
     return (
@@ -132,8 +153,8 @@ function handleGetProductDetails(getCurrentProductId){
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                 {
                     productList && productList.length > 0 ? (
-                        productList.map((productItem, idx) => (
-                            <ShoppingProductTile handleGetProductDetails={handleGetProductDetails} key={productItem.id || productItem._id || idx} product={productItem} />
+                        productList.map((productItem) => (
+                            <ShoppingProductTile handleGetProductDetails={handleGetProductDetails}  product={productItem} handleAddtoCart={handleAddtoCart} />
                         ))
                     ) : null
                 }
