@@ -100,16 +100,27 @@ function handleAddtoCart(getCurrentProductId){
     });
 }
     useEffect(() => {
-        setSort('price-lowtohigh');
-        setFilters(JSON.parse(sessionStorage.getItem('filters')) || {});
-    }, []);
+    setSort("price-lowtohigh");
+
+    const category = searchParams.get("category");
+
+    if (category) {
+        setFilters({
+            category: [category],
+        });
+    } else {
+        setFilters({});
+    }
+}, [searchParams]);
 
     useEffect(() => {
-        if(filters && Object.keys(filters).length > 0){
-            const createqueryString = createSearchParamsHelper(filters)
-            setSearchParams(new URLSearchParams(createqueryString));
-        }
-    }, [filters]);
+    if (filters && Object.keys(filters).length > 0) {
+        const createqueryString = createSearchParamsHelper(filters);
+        setSearchParams(new URLSearchParams(createqueryString), {
+            replace: true,
+        });
+    }
+    }, [filters, setSearchParams]);
 
     useEffect(() => {
         if(filters!==null && sort!==null)

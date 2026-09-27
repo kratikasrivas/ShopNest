@@ -2,10 +2,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 
-const initialState={
-    approvalURL:null,
-    isLoading:false,
-    orderId:null
+const initialState = {
+    approvalURL: null,
+    isLoading: false,
+    orderId: null,
+    orders: [],
 };
 export const createNewOrder=createAsyncThunk('/order/createNewOrder',async(orderData)=>{
       const response=await axios.post('http://localhost:5000/api/shop/order/create',orderData);
@@ -15,6 +16,15 @@ export const capturePayment=createAsyncThunk('/order/capturePayment',async({paym
       const response=await axios.post('http://localhost:5000/api/shop/order/capture',{paymentId,payerId,orderId});
       return response.data;
 })
+export const fetchAllOrdersByUserId = createAsyncThunk(
+  "/order/fetchAllOrdersByUserId",
+  async (userId) => {
+    const response = await axios.get(
+      `http://localhost:5000/api/shop/order/list/${userId}`
+    );
+    return response.data;
+  }
+);
 const shoppingOrderSlice=createSlice({
     name:'shoppingOrderSlice',
     initialState,
@@ -36,6 +46,17 @@ const shoppingOrderSlice=createSlice({
             state.isLoading=false;
             state.approvalURL=null
             state.orderId=null
+        })
+        .addCase(fetchAllOrdersByUserId.pending, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(fetchAllOrdersByUserId.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.orders = action.payload.data;
+        })
+        .addCase(fetchAllOrdersByUserId.rejected, (state) => {
+            state.isLoading = false;
+            state.orders = [];
         })
 
     }
