@@ -1,6 +1,6 @@
 const Product = require('../../models/Product');
 
-const getFiltereredProducts = async(req, res) => {
+const getFilteredProducts  = async(req, res) => {
     try{
         
 
@@ -121,6 +121,6 @@ const getProductDetails= async(req,res)=>{
 }
 
 module.exports = {
-    getFiltereredProducts,
+    getFilteredProducts,
     fetchAllProducts, getProductDetails
 };

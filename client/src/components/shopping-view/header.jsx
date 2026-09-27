@@ -24,14 +24,27 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 
 function MenuItems() {
   const navigate=useNavigate()
-  function handleNavigate(getCurrentMenuItem){
-    sessionStorage.removeItem('filters')
-    const currentFilter=getCurrentMenuItem.id !=='home' ? 
-    {
-      category : [getCurrentMenuItem.id]
-    }:null
-    sessionStorage.setItem('filters',JSON.stringify(currentFilter))
-    navigate(getCurrentMenuItem.path)
+  function handleNavigate(getCurrentMenuItem) {
+    sessionStorage.removeItem("filters");
+
+    if (getCurrentMenuItem.id === "home") {
+        navigate(getCurrentMenuItem.path);
+        return;
+    }
+
+    const currentFilter = {
+        category: [getCurrentMenuItem.id],
+    };
+
+    sessionStorage.setItem(
+        "filters",
+        JSON.stringify(currentFilter)
+    );
+
+    navigate(
+    `${getCurrentMenuItem.path}?category=${getCurrentMenuItem.id}`,
+    { replace: true }
+    );
   }
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">

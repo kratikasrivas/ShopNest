@@ -57,7 +57,10 @@ function ProductImageUpload({imageFile,setImageFile,imageLoadingState, setUpload
 
 
         if (response?.data?.success) {
-            setUploadedImageUrl(response.data.result.url);
+            setUploadedImageUrl({
+                url: response.data.result.url,
+                public_id: response.data.result.public_id,
+            });
         } else {
             console.error("Upload failed");
         }
