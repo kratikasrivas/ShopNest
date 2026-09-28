@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import API_URL from "@/lib/api";
 
 const initialState = {
   isLoading: false,
@@ -11,7 +12,7 @@ export const getAllOrdersForAdmin = createAsyncThunk(
   "adminOrder/getAllOrdersForAdmin",
   async () => {
     const response = await axios.get(
-      "http://localhost:5000/api/admin/orders/get"
+      `${API_URL}/api/admin/orders/get`
     );
 
     return response.data;
@@ -22,7 +23,7 @@ export const getOrderDetailsForAdmin = createAsyncThunk(
   "adminOrder/getOrderDetailsForAdmin",
   async (id) => {
     const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/details/${id}`
+      `${API_URL}/api/admin/orders/details/${id}`
     );
 
     return response.data;
@@ -33,7 +34,7 @@ export const updateOrderStatus = createAsyncThunk(
   "adminOrder/updateOrderStatus",
   async ({ id, orderStatus }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/admin/orders/update/${id}`,
+      `${API_URL}/api/admin/orders/update/${id}`,
       {
         orderStatus,
       }

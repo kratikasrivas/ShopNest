@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import API_URL from "@/lib/api";
 
 const initialState={
     isLoading : false,
@@ -8,7 +9,7 @@ const initialState={
 
 export const editProduct =createAsyncThunk('/products/editProduct',
     async ({id , formData})=>{
-        const result=await axios.put(`http://localhost:5000/api/admin/products/edit/${id}`,formData,{
+        const result=await axios.put(`${API_URL}/api/admin/products/edit/${id}`,formData,{
             headers:{
             'Content-Type' : 'application/json'
             }
@@ -22,7 +23,7 @@ export const editProduct =createAsyncThunk('/products/editProduct',
 
 export const deleteProduct =createAsyncThunk('/products/deleteProduct',
     async (id)=>{
-        const result=await axios.delete(`http://localhost:5000/api/admin/products/delete/${id}`);
+        const result=await axios.delete(`${API_URL}/api/admin/products/delete/${id}`);
 
         return result?.data;
         
@@ -33,7 +34,7 @@ export const deleteProduct =createAsyncThunk('/products/deleteProduct',
 
 export const addNewProduct =createAsyncThunk('/products/addnewproduct',
     async (formData)=>{
-        const result=await axios.post('http://localhost:5000/api/admin/products/add',formData,{
+        const result=await axios.post(`${API_URL}/api/admin/products/add`,formData,{
             headers:{
             'Content-Type' : 'application/json'
             }
@@ -48,7 +49,7 @@ export const addNewProduct =createAsyncThunk('/products/addnewproduct',
 
 export const fetchAllProducts =createAsyncThunk('/products/fetchAllProducts',
     async ()=>{
-        const result=await axios.get('http://localhost:5000/api/admin/products/get');
+        const result=await axios.get(`${API_URL}/api/admin/products/get`);
 
         return result?.data;
         

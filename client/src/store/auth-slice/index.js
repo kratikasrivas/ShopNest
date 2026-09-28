@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import API_URL from "@/lib/api";
+
 const initialState = {
     isAuthenticated: false,
     isLoading: true,
@@ -9,7 +11,7 @@ const initialState = {
 
 export const registerUser = createAsyncThunk('/auth/register', async (formData) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+        const response = await axios.post(`${API_URL}/api/auth/register`, formData);
         return response.data;
     } catch (error) {
         console.error('Register error:', error);
@@ -20,7 +22,7 @@ export const registerUser = createAsyncThunk('/auth/register', async (formData) 
 
 export const loginUser = createAsyncThunk('/auth/login', async (formData) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+        const response = await axios.post(`${API_URL}/api/auth/login`, formData);
         if (response.data.success && response.data.token) {
             localStorage.setItem('token', response.data.token);
         }
@@ -33,7 +35,7 @@ export const loginUser = createAsyncThunk('/auth/login', async (formData) => {
 
 export const logoutUser = createAsyncThunk('/auth/logout', async () => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/logout');
+        const response = await axios.post(`${API_URL}/api/auth/logout`);
         localStorage.removeItem('token');
         return response.data;
     } catch (error) {
@@ -49,7 +51,7 @@ export const checkAuth = createAsyncThunk('/auth/checkauth', async () => {
     }
 
     try {
-        const response = await axios.get('http://localhost:5000/api/auth/check-auth', {
+        const response = await axios.get(`${API_URL}/api/auth/check-auth`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
