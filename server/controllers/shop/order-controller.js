@@ -78,34 +78,62 @@ const createOrder = async (req, res) => {
 }
 const capturePayment = async (req, res) => {
     try {
-        const { paymentId, payerId, orderId } = req.body
-        let order = await Order.findById(orderId)
+        const { paymentId, payerId, orderId } = req.body;
+
+        const order = await Order.findById(orderId);
+
         if (!order) {
             return res.status(404).json({
                 success: false,
-                message: 'Order can not be found'
-            })
+                message: "Order can not be found",
+            });
         }
-        order.paymentStatus = 'paid';
-        order.orderStatus = 'confirmed';
-        order.paymentId = paymentId;
-        order.payerId = payerId;
-        const getCartId = order.cartId;
-        await Cart.findByIdAndDelete(getCartId)
-        await order.save();
-        res.status(200).json({
-            success: true,
-            message: 'Order confirmed',
-            data: order,
-        })
+
+        paypal.payment.execute(
+            paymentId,
+            { payer_id: payerId },
+            async (error, payment) => {
+                if (error) {
+                    console.log(error);
+
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error while executing PayPal payment",
+                    });
+                }
+
+                if (payment.state !== "approved") {
+                    return res.status(400).json({
+                        success: false,
+                        message: "PayPal payment was not approved",
+                    });
+                }
+
+                order.paymentStatus = "paid";
+                order.orderStatus = "confirmed";
+                order.paymentId = paymentId;
+                order.payerId = payerId;
+
+                await Cart.findByIdAndDelete(order.cartId);
+                await order.save();
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Order confirmed",
+                    data: order,
+                });
+            }
+        );
     } catch (e) {
         console.log(e);
+
         res.status(500).json({
             success: false,
-            message: 'Some error occured!'
-        })
+            message: "Some error occured!",
+        });
     }
-}
+};
+    
 const getAllOrdersByUserId = async (req, res) => {
     try {
         const { userId } = req.params;
